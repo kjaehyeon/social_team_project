@@ -126,9 +126,10 @@ public class Map extends AppCompatActivity {
     }
     private void showmyCurrentLocation(Double latitude, Double longitude){
         LatLng curPoint = new LatLng(latitude,longitude);
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint,15));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 16));
 
         showmyLocationMarker(curPoint);
+
 
         LatLng point = new LatLng(35.885870, 128.605367);
         showtrashLocationMarker(point , 0);
