@@ -41,6 +41,8 @@ public class Map extends AppCompatActivity{
     FoodWasteBucketList bucketList = new FoodWasteBucketList();
     MarkerOptions[] trashLocationMarker = new MarkerOptions[bucketList.getBucketNum()];
     public HashMap<String, FoodWasteBucket> markers = new HashMap<>();
+    Customer customer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,9 +51,11 @@ public class Map extends AppCompatActivity{
 
         String usr_id = intent.getStringExtra("usr_id");
         String usr_password = intent.getStringExtra("usr_password");
+        customer = new Customer(usr_id, usr_password,"경북대학교", new Usage());
 
         Button QrRead_bt = (Button)findViewById(R.id.QrRead_bt); //QR인식 버튼
         Button MyPage = (Button)findViewById(R.id.myPageButton);
+
 
 
         String[] permissions ={
@@ -75,6 +79,7 @@ public class Map extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Map.this, UserInfo.class);
+                intent.putExtra("customer", customer);
                 startActivity(intent);
             }
         });

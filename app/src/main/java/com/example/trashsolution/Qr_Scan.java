@@ -79,8 +79,6 @@ public class Qr_Scan extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
-
-
 }
 
 

@@ -1,6 +1,8 @@
 package com.example.trashsolution;
 
-public class Usage {
+import java.io.Serializable;
+
+public class Usage implements Serializable {
     public int totalUsage;
     public int monthlyUsage;
 

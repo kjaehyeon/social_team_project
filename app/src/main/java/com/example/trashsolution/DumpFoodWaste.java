@@ -7,6 +7,7 @@ public class DumpFoodWaste {
         double curCapacity = bucket.capacity.getCurrentCapacity();
         bucket.capacity.setCurrentCapacity(curCapacity);
         //사용자가 버린 무게 추가
-
+        user.usage.monthlyUsage += weight;
+        user.usage.totalUsage += weight;
     }
 }

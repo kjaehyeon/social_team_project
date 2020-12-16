@@ -1,6 +1,8 @@
 package com.example.trashsolution;
 
-public class Customer extends User {
+import java.io.Serializable;
+
+public class Customer extends User implements Serializable {
     public String address;
     public Usage usage;
 
@@ -8,14 +10,14 @@ public class Customer extends User {
         this.address = new String("");
         this.usage = new Usage();
     }
-    Customer(String address, Usage usage){
+    Customer(String id, String password, String address, Usage usage){
+        this.id = id;
+        this.password = password;
         this.address = address;
         this.usage = usage;
     }
     public void setCustomerInfo(String id, String password, String address){
         this.address = address;
-        this.id = id;
-        this.password = password;
     }
     public String getAddress(){
         return address;
