@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
@@ -30,7 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class Map extends AppCompatActivity {
+public class Map extends AppCompatActivity{
     SupportMapFragment mapFragment;
     GoogleMap map;
     MarkerOptions myLocationMarker;
@@ -64,6 +65,16 @@ public class Map extends AppCompatActivity {
                     se.printStackTrace();
                 }
 
+                LatLng point = new LatLng(35.885870, 128.605367);
+                showtrashLocationMarker(point , 0);
+                LatLng point2 = new LatLng(35.884851, 128.607256);
+                showtrashLocationMarker(point2 , 1);
+                LatLng point3 = new LatLng(35.884236, 128.608721);
+                showtrashLocationMarker(point3 , 2);
+                LatLng point4 = new LatLng(35.884708, 128.611076);
+                showtrashLocationMarker(point4 , 3);
+                LatLng point5 = new LatLng(35.885159, 128.612417);
+                showtrashLocationMarker(point5 , 4);
             }
         });
 
@@ -82,10 +93,9 @@ public class Map extends AppCompatActivity {
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         try{
             Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if(location != null){
+            if(location != null) {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
-
             }
 
             GPSListener gpsListener = new GPSListener();
@@ -94,19 +104,24 @@ public class Map extends AppCompatActivity {
 
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,minDistance, gpsListener);
 
+
         }catch(SecurityException se){
             se.getStackTrace();
         }
     }
+
+
+
     class GPSListener implements LocationListener {
 
         @Override
         public void onLocationChanged(@NonNull Location location) {
             Double latitude = location.getLatitude();
             Double longitude = location.getLongitude();
-            String message = "내 위치\n latitude : "+ latitude + "\nlongitude : "+longitude;
 
-            showmyCurrentLocation(latitude,longitude);
+            showMyCurrentLocation(latitude,longitude);
+
+
         }
 
         @Override
@@ -124,25 +139,16 @@ public class Map extends AppCompatActivity {
 
         }
     }
-    private void showmyCurrentLocation(Double latitude, Double longitude){
+    private void showMyCurrentLocation(Double latitude, Double longitude){
         LatLng curPoint = new LatLng(latitude,longitude);
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 16));
 
-        showmyLocationMarker(curPoint);
+        showMyLocationMarker(curPoint);
 
 
-        LatLng point = new LatLng(35.885870, 128.605367);
-        showtrashLocationMarker(point , 0);
-        LatLng point2 = new LatLng(35.884851, 128.607256);
-        showtrashLocationMarker(point2 , 1);
-        LatLng point3 = new LatLng(35.884236, 128.608721);
-        showtrashLocationMarker(point3 , 2);
-        LatLng point4 = new LatLng(35.884708, 128.611076);
-        showtrashLocationMarker(point4 , 3);
-        LatLng point5 = new LatLng(35.885159, 128.612417);
-        showtrashLocationMarker(point5 , 4);
+
     }
-    private void showmyLocationMarker(LatLng curPoint) {
+    private void showMyLocationMarker(LatLng curPoint) {
         if (myLocationMarker == null) {
             myLocationMarker = new MarkerOptions();
             myLocationMarker.position(curPoint);
@@ -162,10 +168,14 @@ public class Map extends AppCompatActivity {
             trashLocationMarker[i].snippet("● GPS로 확인한 위치");
             trashLocationMarker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.trashmarker2));
             map.addMarker(trashLocationMarker[i]);
+
+            View infoWindow = getLayoutInflater().inflate(R.layout.marker_popup, null);
+            BucketInfoAdapter bucketInfoAdapter = new BucketInfoAdapter(infoWindow, )
         } else {
             trashLocationMarker[i].position(curPoint);
         }
     }
+
     public void checkPermissions(String[] permissions){
         ArrayList<String> targetList = new ArrayList<String>();
 
@@ -173,11 +183,11 @@ public class Map extends AppCompatActivity {
             String curPermission = permissions[i];
             int permissionCheck = ContextCompat.checkSelfPermission(this,curPermission);
             if(permissionCheck == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this,"권한 있음",Toast.LENGTH_SHORT).show();
+                Log.d("permission","granted");
             }else{
-                Toast.makeText(this,"권한 없음",Toast.LENGTH_SHORT).show();
+                Log.d("permission","not granted");
                 if(ActivityCompat.shouldShowRequestPermissionRationale(this,curPermission)){
-                    Toast.makeText(this,"권한 설명 필요함",Toast.LENGTH_SHORT).show();
+                    Log.d("permission","need explanation");
                 }else{
                     targetList.add(curPermission);
                 }
