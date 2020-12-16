@@ -6,7 +6,7 @@ public class FoodWasteBucketList {
     private ArrayList<FoodWasteBucket> buckets = new ArrayList<>();
     private double[] lat = {35.885907, 35.884851, 35.884236, 35.884708, 35.885159};
     private double[] lang = {128.605364, 128.607256, 128.608721, 128.611076, 128.612417};
-    private double[] cap = { 30.5, 105.3, 56.2, 42.6, 123.1};
+    private double[] cap = { 30.5, 105.3, 200, 42.6, 123.1};
     FoodWasteBucketList() {
         for (int i = 0; i < 5; i++) {
             this.buckets.add(new FoodWasteBucket(new Location(lat[i], lang[i]), "FoodWasteBucket" + i, new Capacity(cap[i])));

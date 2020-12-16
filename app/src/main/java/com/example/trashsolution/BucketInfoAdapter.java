@@ -3,6 +3,7 @@ package com.example.trashsolution;
 import android.app.Application;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,12 +23,11 @@ public class BucketInfoAdapter implements GoogleMap.InfoWindowAdapter {
         //mapping
         TextView title = window.findViewById(R.id.name);
         TextView remain = window.findViewById(R.id.remain_capacity);
-        ProgressBar progressBar = window.findViewById(R.id.progressbar);
-
+        ImageView imageView = window.findViewById(R.id.imageView);
+        if(bucket.getCapacity().getCurrentCapacity() >= 200)
+            imageView.setImageResource(R.drawable.fullbucket);
         title.setText(bucket.serialNumber);
         remain.setText(bucket.capacity.currentCapacity + "L / "+ 200+"L");
-        progressBar.setProgress((int)bucket.getCapacity().getCurrentCapacity());
-        progressBar.setIndeterminate(false);
 
         Log.d("progress", bucket.getCapacity().getCurrentCapacity() + "");
         return window;
