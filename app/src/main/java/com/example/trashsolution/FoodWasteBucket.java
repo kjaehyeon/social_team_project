@@ -21,6 +21,10 @@ public class FoodWasteBucket {
         this.location = location;
         this.serialNumber = serialNumber;
     }
+
+    public void setCapacity(Capacity capacity) {
+        this.capacity = capacity;
+    }
     public Capacity getCapacity() {
         return capacity;
     }

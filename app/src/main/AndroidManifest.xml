@@ -78,5 +78,6 @@
         </activity>
 
         <activity android:name=".Loading" />
+        <activity android:name=".UserInfo" />
     </application>
 </manifest>

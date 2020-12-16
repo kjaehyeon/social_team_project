@@ -48,6 +48,13 @@ public class Qr_Scan extends AppCompatActivity {
                 finish();
             }
         });
+
+
+
+
+
+
+
     }
 
     //스캔 결과를 뽑아냄.
@@ -72,6 +79,8 @@ public class Qr_Scan extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+
 }
 
 

@@ -51,6 +51,8 @@ public class Map extends AppCompatActivity{
         String usr_password = intent.getStringExtra("usr_password");
 
         Button QrRead_bt = (Button)findViewById(R.id.QrRead_bt); //QR인식 버튼
+        Button MyPage = (Button)findViewById(R.id.myPageButton);
+
 
         String[] permissions ={
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -67,6 +69,13 @@ public class Map extends AppCompatActivity{
                 Intent myintent = new Intent(Map.this, Qr_Scan.class);
                 startActivity(myintent);
                 //overridePendingTransition(R.anim.fadein, R.anim.fadeout); 효과
+            }
+        });
+        MyPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Map.this, UserInfo.class);
+                startActivity(intent);
             }
         });
 
