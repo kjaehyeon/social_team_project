@@ -79,5 +79,4 @@
 
         <activity android:name=".Loading" />
     </application>
-
 </manifest>

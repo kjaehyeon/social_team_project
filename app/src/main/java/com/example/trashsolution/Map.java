@@ -1,8 +1,12 @@
 package com.example.trashsolution;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -10,23 +14,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
@@ -38,11 +32,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class Map extends AppCompatActivity {
+public class Map extends AppCompatActivity{
     SupportMapFragment mapFragment;
     GoogleMap map;
     MarkerOptions myLocationMarker;
-    MarkerOptions[] trashLocationMarker;
+    FoodWasteBucketList bucketList = new FoodWasteBucketList();
+    MarkerOptions[] trashLocationMarker = new MarkerOptions[bucketList.getBucketNum()];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +45,19 @@ public class Map extends AppCompatActivity {
         setContentView(R.layout.activity_map);
         Intent intent = getIntent();
         String usr_id = intent.getStringExtra("usr_id");
-        //OOO님 환영합니다!
         String usr_password = intent.getStringExtra("usr_password");
+
+
         Button QrRead_bt = (Button)findViewById(R.id.QrRead_bt); //QR인식 버튼
+
+
+        String[] permissions ={
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_PHONE_STATE
+        };
+        checkPermissions(permissions);
 
         //QR인식 버튼 클릭시 기능
         QrRead_bt.setOnClickListener(new View.OnClickListener() {
@@ -63,30 +68,7 @@ public class Map extends AppCompatActivity {
                 //overridePendingTransition(R.anim.fadein, R.anim.fadeout); 효과
             }
         });
-    }
-    @Override
-    public void onBackPressed(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("알림");
-        builder.setMessage("종료하시겠습니까?");
-        builder.setNegativeButton("취소",null);
-        builder.setPositiveButton("종료", new DialogInterface.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                moveTaskToBack(true);						// 태스크를 백그라운드로 이동
-                finishAndRemoveTask();						// 액티비티 종료 + 태스크 리스트에서 지우기
-                android.os.Process.killProcess(android.os.Process.myPid());	// 앱 프로세스 종료
-            }
-        });
-        builder.show();
-        trashLocationMarker = new MarkerOptions[5];
-        String[] permissions ={
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-        };
-        checkPermissions(permissions);
+
 
         mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -99,6 +81,9 @@ public class Map extends AppCompatActivity {
                 }catch (SecurityException se){
                     se.printStackTrace();
                 }
+                for(int i = 0; i < bucketList.getBucketNum(); i++){
+                    showtrashLocationMarker(bucketList.getBucketByIndex(i), i);
+                }
 
             }
         });
@@ -108,20 +93,22 @@ public class Map extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+
         startLocationService();
+
+
     }
     public void startLocationService(){
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         try{
             Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if(location != null){
+            if(location != null) {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
-
             }
 
             GPSListener gpsListener = new GPSListener();
-            long minTime = 1000;
+            long minTime = 5000;
             float minDistance = 0;
 
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,minDistance, gpsListener);
@@ -130,15 +117,17 @@ public class Map extends AppCompatActivity {
             se.getStackTrace();
         }
     }
+
+
     class GPSListener implements LocationListener {
 
         @Override
         public void onLocationChanged(@NonNull Location location) {
             Double latitude = location.getLatitude();
             Double longitude = location.getLongitude();
-            String message = "내 위치\n latitude : "+ latitude + "\nlongitude : "+longitude;
 
-            showmyCurrentLocation(latitude,longitude);
+            showMyCurrentLocation(latitude,longitude);
+
         }
 
         @Override
@@ -156,25 +145,14 @@ public class Map extends AppCompatActivity {
 
         }
     }
-    private void showmyCurrentLocation(Double latitude, Double longitude){
+    private void showMyCurrentLocation(Double latitude, Double longitude){
         LatLng curPoint = new LatLng(latitude,longitude);
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 16));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 16));
 
-        showmyLocationMarker(curPoint);
+        showMyLocationMarker(curPoint);
 
-
-        LatLng point = new LatLng(35.885870, 128.605367);
-        showtrashLocationMarker(point , 0);
-        LatLng point2 = new LatLng(35.884851, 128.607256);
-        showtrashLocationMarker(point2 , 1);
-        LatLng point3 = new LatLng(35.884236, 128.608721);
-        showtrashLocationMarker(point3 , 2);
-        LatLng point4 = new LatLng(35.884708, 128.611076);
-        showtrashLocationMarker(point4 , 3);
-        LatLng point5 = new LatLng(35.885159, 128.612417);
-        showtrashLocationMarker(point5 , 4);
     }
-    private void showmyLocationMarker(LatLng curPoint) {
+    private void showMyLocationMarker(LatLng curPoint) {
         if (myLocationMarker == null) {
             myLocationMarker = new MarkerOptions();
             myLocationMarker.position(curPoint);
@@ -186,18 +164,22 @@ public class Map extends AppCompatActivity {
             myLocationMarker.position(curPoint);
         }
     }
-    private void showtrashLocationMarker(LatLng curPoint, int i) {
-        if (trashLocationMarker[i] == null) {
-            trashLocationMarker[i] = new MarkerOptions();
-            trashLocationMarker[i].position(curPoint);
-            trashLocationMarker[i].title("● 내 위치\n");
-            trashLocationMarker[i].snippet("● GPS로 확인한 위치");
-            trashLocationMarker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.trashmarker2));
-            map.addMarker(trashLocationMarker[i]);
-        } else {
-            trashLocationMarker[i].position(curPoint);
-        }
+    private void showtrashLocationMarker(FoodWasteBucket bucket, int i) {
+        LatLng curPoint = new LatLng(bucket.getLocation().getLatitude(), bucket.getLocation().getLongitude());
+
+        trashLocationMarker[i] = new MarkerOptions();
+        trashLocationMarker[i].position(curPoint);
+        trashLocationMarker[i].title("쓰레기통"+ i);
+        trashLocationMarker[i].snippet("● GPS로 확인한 위치");
+        trashLocationMarker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.trashmarker2));
+        Log.d("marker", ""+trashLocationMarker[i].toString());
+        map.addMarker(trashLocationMarker[i]);
+
+        View infoWindow = getLayoutInflater().inflate(R.layout.marker_popup, null);
+        BucketInfoAdapter bucketInfoAdapter = new BucketInfoAdapter(infoWindow, bucket);
+        map.setInfoWindowAdapter(bucketInfoAdapter);
     }
+
     public void checkPermissions(String[] permissions){
         ArrayList<String> targetList = new ArrayList<String>();
 
@@ -205,11 +187,11 @@ public class Map extends AppCompatActivity {
             String curPermission = permissions[i];
             int permissionCheck = ContextCompat.checkSelfPermission(this,curPermission);
             if(permissionCheck == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this,"권한 있음",Toast.LENGTH_SHORT).show();
+                Log.d("permission","granted");
             }else{
-                Toast.makeText(this,"권한 없음",Toast.LENGTH_SHORT).show();
+                Log.d("permission","not granted");
                 if(ActivityCompat.shouldShowRequestPermissionRationale(this,curPermission)){
-                    Toast.makeText(this,"권한 설명 필요함",Toast.LENGTH_SHORT).show();
+                    Log.d("permission","need explanation");
                 }else{
                     targetList.add(curPermission);
                 }
@@ -233,6 +215,23 @@ public class Map extends AppCompatActivity {
                 return;
         }
     }
+    @Override
+    public void onBackPressed(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("알림");
+        builder.setMessage("종료하시겠습니까?");
+        builder.setNegativeButton("취소",null);
+        builder.setPositiveButton("종료", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                moveTaskToBack(true);						// 태스크를 백그라운드로 이동
+                finishAndRemoveTask();						// 액티비티 종료 + 태스크 리스트에서 지우기
+                android.os.Process.killProcess(android.os.Process.myPid());	// 앱 프로세스 종료
+            }
+        });
+        builder.show();
+    }
     public void onResume(){
         super.onResume();
         try{
@@ -254,4 +253,6 @@ public class Map extends AppCompatActivity {
             se.printStackTrace();
         }
     }
+
+
 }
