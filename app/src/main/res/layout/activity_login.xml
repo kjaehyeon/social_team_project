@@ -14,11 +14,13 @@
         android:paddingTop="200dp"
         android:orientation="vertical"
         >
+
         <ImageView
             android:layout_width="400dp"
             android:layout_height="100dp"
-            android:src="@drawable/title"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:src="@drawable/title" />
+
         <EditText
             android:id="@+id/et_id"
             android:layout_width="300dp"
@@ -57,5 +59,4 @@
             android:textStyle="bold" />
 
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

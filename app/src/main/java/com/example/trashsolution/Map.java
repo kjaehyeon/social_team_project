@@ -1,25 +1,26 @@
 package com.example.trashsolution;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
@@ -44,14 +45,30 @@ public class Map extends AppCompatActivity{
         setContentView(R.layout.activity_map);
         Intent intent = getIntent();
         String usr_id = intent.getStringExtra("usr_id");
-        //OOO님 환영합니다!
         String usr_password = intent.getStringExtra("usr_password");
+
+
+        Button QrRead_bt = (Button)findViewById(R.id.QrRead_bt); //QR인식 버튼
+
+
         String[] permissions ={
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_PHONE_STATE
         };
         checkPermissions(permissions);
+
+        //QR인식 버튼 클릭시 기능
+        QrRead_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myintent = new Intent(Map.this, Qr_Scan.class);
+                startActivity(myintent);
+                //overridePendingTransition(R.anim.fadein, R.anim.fadeout); 효과
+            }
+        });
+
 
         mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -76,7 +93,6 @@ public class Map extends AppCompatActivity{
         }catch (Exception e){
             e.printStackTrace();
         }
-        Toast.makeText(getApplicationContext(), usr_id+"님, 환영합니다!", Toast.LENGTH_LONG).show();
 
         startLocationService();
 
@@ -199,6 +215,23 @@ public class Map extends AppCompatActivity{
                 return;
         }
     }
+    @Override
+    public void onBackPressed(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("알림");
+        builder.setMessage("종료하시겠습니까?");
+        builder.setNegativeButton("취소",null);
+        builder.setPositiveButton("종료", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                moveTaskToBack(true);						// 태스크를 백그라운드로 이동
+                finishAndRemoveTask();						// 액티비티 종료 + 태스크 리스트에서 지우기
+                android.os.Process.killProcess(android.os.Process.myPid());	// 앱 프로세스 종료
+            }
+        });
+        builder.show();
+    }
     public void onResume(){
         super.onResume();
         try{
@@ -220,4 +253,6 @@ public class Map extends AppCompatActivity{
             se.printStackTrace();
         }
     }
+
+
 }
