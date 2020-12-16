@@ -22,12 +22,10 @@ public class BucketInfoAdapter implements GoogleMap.InfoWindowAdapter {
         //mapping
         TextView title = window.findViewById(R.id.name);
         TextView remain = window.findViewById(R.id.remain_capacity);
-        TextView location = window.findViewById(R.id.location);
         ProgressBar progressBar = window.findViewById(R.id.progressbar);
 
         title.setText(bucket.serialNumber);
         remain.setText(bucket.capacity.currentCapacity + " / "+ 200);
-        location.setText(""+bucket.location.getLatitude());
         progressBar.setProgress((int)bucket.getCapacity().getCurrentCapacity());
         progressBar.setIndeterminate(false);
 
