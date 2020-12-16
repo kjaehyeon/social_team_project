@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Login extends AppCompatActivity {
+
     private EditText et_id, et_password;
     private Button btn_login;
 
@@ -76,6 +77,7 @@ public class Login extends AppCompatActivity {
                     intent.putExtra("usr_id", usr_id);
                     intent.putExtra("usr_password", usr_password);
                     startActivity(intent);
+
                 }
             }
         });
