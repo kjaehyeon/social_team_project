@@ -10,9 +10,7 @@
     <ImageView
         android:layout_width="400dp"
         android:layout_height="400dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginLeft="30dp"
-        android:background="@drawable/loadingpage"
+        android:background="@drawable/loadingtitle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
