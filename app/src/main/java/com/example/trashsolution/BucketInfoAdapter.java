@@ -25,7 +25,7 @@ public class BucketInfoAdapter implements GoogleMap.InfoWindowAdapter {
         ProgressBar progressBar = window.findViewById(R.id.progressbar);
 
         title.setText(bucket.serialNumber);
-        remain.setText(bucket.capacity.currentCapacity + " / "+ 200);
+        remain.setText(bucket.capacity.currentCapacity + "L / "+ 200+"L");
         progressBar.setProgress((int)bucket.getCapacity().getCurrentCapacity());
         progressBar.setIndeterminate(false);
 

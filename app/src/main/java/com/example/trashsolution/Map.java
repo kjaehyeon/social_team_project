@@ -28,9 +28,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Map extends AppCompatActivity{
     SupportMapFragment mapFragment;
@@ -38,18 +40,17 @@ public class Map extends AppCompatActivity{
     MarkerOptions myLocationMarker;
     FoodWasteBucketList bucketList = new FoodWasteBucketList();
     MarkerOptions[] trashLocationMarker = new MarkerOptions[bucketList.getBucketNum()];
-
+    public HashMap<String, FoodWasteBucket> markers = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         Intent intent = getIntent();
+
         String usr_id = intent.getStringExtra("usr_id");
         String usr_password = intent.getStringExtra("usr_password");
 
-
         Button QrRead_bt = (Button)findViewById(R.id.QrRead_bt); //QR인식 버튼
-
 
         String[] permissions ={
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -84,7 +85,14 @@ public class Map extends AppCompatActivity{
                 for(int i = 0; i < bucketList.getBucketNum(); i++){
                     showtrashLocationMarker(bucketList.getBucketByIndex(i), i);
                 }
-
+                map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        Log.d("marker", marker.getTitle());
+                        showtrashLocationMarker(markers.get(marker.getTitle()));
+                        return false;
+                    }
+                });
             }
         });
 
@@ -117,7 +125,6 @@ public class Map extends AppCompatActivity{
             se.getStackTrace();
         }
     }
-
 
     class GPSListener implements LocationListener {
 
@@ -166,15 +173,21 @@ public class Map extends AppCompatActivity{
     }
     private void showtrashLocationMarker(FoodWasteBucket bucket, int i) {
         LatLng curPoint = new LatLng(bucket.getLocation().getLatitude(), bucket.getLocation().getLongitude());
-
         trashLocationMarker[i] = new MarkerOptions();
         trashLocationMarker[i].position(curPoint);
         trashLocationMarker[i].title("쓰레기통"+ i);
         trashLocationMarker[i].snippet("● GPS로 확인한 위치");
         trashLocationMarker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.trashmarker2));
-        Log.d("marker", ""+trashLocationMarker[i].toString());
+
+        markers.put(trashLocationMarker[i].getTitle(), bucket);
         map.addMarker(trashLocationMarker[i]);
 
+        View infoWindow = getLayoutInflater().inflate(R.layout.marker_popup, null);
+        BucketInfoAdapter bucketInfoAdapter = new BucketInfoAdapter(infoWindow, bucket);
+        map.setInfoWindowAdapter(bucketInfoAdapter);
+
+    }
+    private void showtrashLocationMarker(FoodWasteBucket bucket) {
         View infoWindow = getLayoutInflater().inflate(R.layout.marker_popup, null);
         BucketInfoAdapter bucketInfoAdapter = new BucketInfoAdapter(infoWindow, bucket);
         map.setInfoWindowAdapter(bucketInfoAdapter);

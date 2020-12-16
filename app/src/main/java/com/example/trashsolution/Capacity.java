@@ -7,7 +7,9 @@ public class Capacity {
     Capacity() {
         this.currentCapacity = 50;
     }
-
+    Capacity(double currentCapacity){
+        this.currentCapacity = currentCapacity;
+    }
     public void setCurrentCapacity(double currentCapacity) {
         this.currentCapacity = currentCapacity;
     }
