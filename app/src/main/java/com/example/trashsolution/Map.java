@@ -35,7 +35,8 @@ public class Map extends AppCompatActivity{
     SupportMapFragment mapFragment;
     GoogleMap map;
     MarkerOptions myLocationMarker;
-    MarkerOptions[] trashLocationMarker;
+    FoodWasteBucketList bucketList = new FoodWasteBucketList();
+    MarkerOptions[] trashLocationMarker = new MarkerOptions[bucketList.getBucketNum()];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,6 @@ public class Map extends AppCompatActivity{
         String usr_id = intent.getStringExtra("usr_id");
         //OOO님 환영합니다!
         String usr_password = intent.getStringExtra("usr_password");
-        trashLocationMarker = new MarkerOptions[5];
         String[] permissions ={
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -64,17 +64,10 @@ public class Map extends AppCompatActivity{
                 }catch (SecurityException se){
                     se.printStackTrace();
                 }
+                for(int i = 0; i < bucketList.getBucketNum(); i++){
+                    showtrashLocationMarker(bucketList.getBucketByIndex(i), i);
+                }
 
-                LatLng point = new LatLng(35.885870, 128.605367);
-                showtrashLocationMarker(point , 0);
-                LatLng point2 = new LatLng(35.884851, 128.607256);
-                showtrashLocationMarker(point2 , 1);
-                LatLng point3 = new LatLng(35.884236, 128.608721);
-                showtrashLocationMarker(point3 , 2);
-                LatLng point4 = new LatLng(35.884708, 128.611076);
-                showtrashLocationMarker(point4 , 3);
-                LatLng point5 = new LatLng(35.885159, 128.612417);
-                showtrashLocationMarker(point5 , 4);
             }
         });
 
@@ -99,17 +92,15 @@ public class Map extends AppCompatActivity{
             }
 
             GPSListener gpsListener = new GPSListener();
-            long minTime = 1000;
+            long minTime = 5000;
             float minDistance = 0;
 
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime,minDistance, gpsListener);
-
 
         }catch(SecurityException se){
             se.getStackTrace();
         }
     }
-
 
 
     class GPSListener implements LocationListener {
@@ -120,7 +111,6 @@ public class Map extends AppCompatActivity{
             Double longitude = location.getLongitude();
 
             showMyCurrentLocation(latitude,longitude);
-
 
         }
 
@@ -141,11 +131,9 @@ public class Map extends AppCompatActivity{
     }
     private void showMyCurrentLocation(Double latitude, Double longitude){
         LatLng curPoint = new LatLng(latitude,longitude);
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 16));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 16));
 
         showMyLocationMarker(curPoint);
-
-
 
     }
     private void showMyLocationMarker(LatLng curPoint) {
@@ -160,20 +148,20 @@ public class Map extends AppCompatActivity{
             myLocationMarker.position(curPoint);
         }
     }
-    private void showtrashLocationMarker(LatLng curPoint, int i) {
-        if (trashLocationMarker[i] == null) {
-            trashLocationMarker[i] = new MarkerOptions();
-            trashLocationMarker[i].position(curPoint);
-            trashLocationMarker[i].title("● 내 위치\n");
-            trashLocationMarker[i].snippet("● GPS로 확인한 위치");
-            trashLocationMarker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.trashmarker2));
-            map.addMarker(trashLocationMarker[i]);
+    private void showtrashLocationMarker(FoodWasteBucket bucket, int i) {
+        LatLng curPoint = new LatLng(bucket.getLocation().getLatitude(), bucket.getLocation().getLongitude());
 
-            View infoWindow = getLayoutInflater().inflate(R.layout.marker_popup, null);
-            BucketInfoAdapter bucketInfoAdapter = new BucketInfoAdapter(infoWindow, )
-        } else {
-            trashLocationMarker[i].position(curPoint);
-        }
+        trashLocationMarker[i] = new MarkerOptions();
+        trashLocationMarker[i].position(curPoint);
+        trashLocationMarker[i].title("쓰레기통"+ i);
+        trashLocationMarker[i].snippet("● GPS로 확인한 위치");
+        trashLocationMarker[i].icon(BitmapDescriptorFactory.fromResource(R.drawable.trashmarker2));
+        Log.d("marker", ""+trashLocationMarker[i].toString());
+        map.addMarker(trashLocationMarker[i]);
+
+        View infoWindow = getLayoutInflater().inflate(R.layout.marker_popup, null);
+        BucketInfoAdapter bucketInfoAdapter = new BucketInfoAdapter(infoWindow, bucket);
+        map.setInfoWindowAdapter(bucketInfoAdapter);
     }
 
     public void checkPermissions(String[] permissions){
