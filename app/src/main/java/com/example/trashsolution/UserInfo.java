@@ -24,8 +24,8 @@ public class UserInfo extends AppCompatActivity {
 
         userID1.setText(customer.getId());
         userID2.setText(customer.getId());
-        usage.setText(Double.toString(customer.getsUsage().totalUsage));
+        usage.setText(Double.toString(customer.getsUsage().totalUsage) + " L");
         address.setText(customer.getAddress());
-        monthlyUsage.setText("이번 달 사용량은 " + Double.toString(customer.getsUsage().monthlyUsage) + " 입니다");
+        monthlyUsage.setText("이번 달 사용량은 " + Double.toString(customer.getsUsage().monthlyUsage) + " L 입니다");
     }
 }

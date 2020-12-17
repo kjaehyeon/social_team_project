@@ -41,7 +41,7 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        android:gravity="left"
+        android:gravity="center"
         android:text="출력"
         android:textColor="#FFFFFF"
         android:textSize="20dp"
