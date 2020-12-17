@@ -20,9 +20,11 @@ public class Qr_Scan extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
     private Button bt_pre, bt_confirm;
     private TextView textView_serialNum;
+    String serial;
     TextView tv;
     ProgressDialog dialog = null;
-
+    String usr_id;
+    String usr_password;
     //qr code scanner object
     IntentIntegrator integrator = new IntentIntegrator(this);
 
@@ -31,6 +33,10 @@ public class Qr_Scan extends AppCompatActivity {
         super.onCreate(savedInstanceState);
  //       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_qr_scan);
+        Intent intent = getIntent();
+
+        usr_id = intent.getStringExtra("usr_id");
+        usr_password = intent.getStringExtra("usr_password");
         textView_serialNum = (TextView) findViewById(R.id.serialNum); //QR에서 인식된 시리얼넘버를 출력하는 textview
 
         //Qr코드 스캔 카메라 출력 화면
@@ -44,16 +50,16 @@ public class Qr_Scan extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 Intent myintent = new Intent(Qr_Scan.this, Map.class);
+                tv = (TextView)findViewById(R.id.editText2);
+                Double weight = Double.valueOf(tv.getText().toString());
+                myintent.putExtra("userWeight", weight);
+                myintent.putExtra("serial", serial);
+                myintent.putExtra("usr_id", usr_id);
+                myintent.putExtra("usr_password", usr_password);
                 startActivity(myintent);
                 finish();
             }
         });
-
-
-
-
-
-
 
     }
 
@@ -73,7 +79,9 @@ public class Qr_Scan extends AppCompatActivity {
             } else {
                 //qrcode 결과가 있으면
                 Toast.makeText(Qr_Scan.this, "QR코드 스캔 완료", Toast.LENGTH_SHORT).show();
-                textView_serialNum.setText(result.getContents());
+                String resultText = result.getContents();
+                serial = resultText;
+                textView_serialNum.setText(resultText);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

@@ -42,6 +42,8 @@ public class Map extends AppCompatActivity{
     MarkerOptions[] trashLocationMarker = new MarkerOptions[bucketList.getBucketNum()];
     public HashMap<String, FoodWasteBucket> markers = new HashMap<>();
     Customer customer;
+    String usr_id;
+    String usr_password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +51,19 @@ public class Map extends AppCompatActivity{
         setContentView(R.layout.activity_map);
         Intent intent = getIntent();
 
-        String usr_id = intent.getStringExtra("usr_id");
-        String usr_password = intent.getStringExtra("usr_password");
+        usr_id = intent.getStringExtra("usr_id");
+        usr_password = intent.getStringExtra("usr_password");
         customer = new Customer(usr_id, usr_password,"경북대학교", new Usage());
+        if(intent.hasExtra("userWeight")) {
+            double usr_weight = intent.getDoubleExtra("userWeight", 0);
+            String serialNum = intent.getStringExtra("serial");
+            System.out.println(serialNum);
+            FoodWasteBucket b = bucketList.getBucketBySerialNumber(serialNum);
+            b.capacity.currentCapacity += usr_weight;
+            customer.usage.totalUsage += usr_weight;
+            customer.usage.monthlyUsage += usr_weight;
+            bucketList.setBucketBySerialNumber(serialNum, b);
+        }
 
         Button QrRead_bt = (Button)findViewById(R.id.QrRead_bt); //QR인식 버튼
         Button MyPage = (Button)findViewById(R.id.myPageButton);
@@ -71,7 +83,10 @@ public class Map extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 Intent myintent = new Intent(Map.this, Qr_Scan.class);
+                myintent.putExtra("usr_id", usr_id);
+                myintent.putExtra("usr_password", usr_password);
                 startActivity(myintent);
+                finish();
                 //overridePendingTransition(R.anim.fadein, R.anim.fadeout); 효과
             }
         });
