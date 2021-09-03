@@ -1,6 +1,6 @@
 # software_design_team_project
 ## 음쓰모아
-![1](https://user-images.githubusercontent.com/33208296/131960916-4b760228-bf6f-48ff-9546-497088bd7858.JPG)
+![1](https://user-images.githubusercontent.com/33208296/131960916-4b760228-bf6f-48ff-9546-497088bd7858.JPG)<br/>
 자취생들의 음식물쓰레기 처리의 어려움을 해결하기 위한 서비스
 
 
